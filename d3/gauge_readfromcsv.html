@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--add buttons, by Hongwei-->
+<p>
+Click here to Restart: <button onclick="javsacript:my_restart()">Restart</button>
+Click hear to Stop: <button onclick="javsacript:my_stop()">Stop</button>
+Click hear to Pause: <button onclick="javsacript:my_pause()">Pause</button>
+Click hear to Start after Pause: <button onclick="javsacript:my_start_after_pause()">Start</button>
+Click here to Restart: <button id="json">boliang</button>
+</p>
+
+<html>
+  	<head>
+    	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+    	<title>d3.js gauges</title>
+		
+		<style>
+		
+			body
+			{
+			  	font: 16px arial;
+			}
+			
+		</style>
+		
+		<!-- <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script> -->
+		<!--Use the local path, local files, so this visualization can be completely independent. changed by Hongwei-->
+        
+		<script type="text/javascript" src="d3/d3.v3.js"></script> 
+		<script type="text/javascript" src="gauge.js"></script>
+        <script type="text/javascript" src="js/jquery-1.8.2.min.js"></script>
+ 
+		<script>
+
+			var my_array = new Array();
+			var gauges = [];
+			var j = 0;
+			
+			function createGauge(name, label, min, max)
+			{
+				var config = 
+				{
+					size: 200,
+					label: label,
+					min: undefined != min ? min : 0,
+					max: undefined != max ? max : 100,
+					minorTicks: 20
+				}
+				
+				var range = config.max - config.min;
+				config.yellowZones = [{ from: config.min + range*0.75, to: config.min + range*0.9 }];
+				config.redZones = [{ from: config.min + range*0.9, to: config.max }];
+				
+				gauges[name] = new Gauge(name + "GaugeContainer", config);
+				gauges[name].render();
+			}
+			
+			function createGauges()
+			{
+				createGauge("screen", "Screen");
+				createGauge("battery", "Battery");
+				createGauge("signal", "Signal")
+				createGauge("camera", "Camera");
+			}
+			//the first test
+			//var txtFile = new XMLHttpRequest();
+			//txtFile.open("GET", "file://D:\Dropbox\test.csv", true);
+			//txtFile.open("GET", "test.csv", true);
+			//allText = txtFile.responseText;
+			
+			//var rows;
+			//d3.csv("test.csv", function(loadedRows) {
+			  //rows = loadedRows;
+			  //doSomethingWithRows();
+			//});
+			//function doSomethingWithRows() {
+			// do something with rows
+			//}
+			//var mydata = new Array();
+/*			var numset=[50,50,50,50];//(1)数组初始化  
+			//var numset = new Array();
+			var nameset=[];//全局变量方便加载完了使用
+			
+          
+			//(2)加载csv数据  
+			d3.csv("http://219.223.216.23:8080/fileserver/upload/file/test.csv",function(error,data){  
+            if(error){  
+                console.log(error);  
+            }else{  
+                //(3)取出其中的数字，和类别名  
+                for(var i=0;i<data.length;i++){  
+                    numset.push(parseFloat(data[i].Augone)); 
+					numset[1].push(parseFloat(data[i].Augeight)); 
+					
+                    nameset.push(data[i].DATE);  
+                } 
+			}});*/				
+			//这个地方特别说明一下：只能在这个回调函数内部使用dataset数组，跳出之后就变成空的了，全局变量赋值都不管用，不知道为什么  
+			
+			//var allText = rows;
+			//var allTextLines = [];
+			
+			//allTextLines = allText.split(/\r\n|\n/);
+			//Should create an array of all the lines from the text loaded
+
+			//Then for each line to process:
+
+			//var fldHeading = []
+			//fldHeading = allTextLines[0].split(',');
+			//Should create an array of the heading information and
+
+			//var fldData = []
+			//fldData = allTextLines[1].split(',');
+			//Should create an array for each data field
+			//where 'x' is the array position from 1..n
+			
+			    
+function json(){
+	alert("aaa");
+	        $.getJSON("test.json",function(data){
+        	//var $jsontip = $("#jsonTip");  
+			var strHtml = "";//存储数据的变量
+			//$jsontip.empty();//清空内容
+			/*$.each(data,function(infoIndex,info){
+				  strHtml += info["Keywords"] + "</br>" + info["Day1"] + "</br>" + info["Day2"] + "</br>";
+				
+				}); */
+			for(var i=0;i<data.length;i++){
+				my_array[i][0] = data[i].Keywords;
+				my_array[i][1] = data[i].Day1;
+				my_array[i][2] = data[i].Day2;
+				
+			}
+			for(var n = 0; n<my_array.length;n++)
+			{
+				alert(my_array[n][0]);
+			}
+				
+	/*		for(var i = 0; i<data.length;i++)
+			{
+				function(infoIndex,info)
+				{
+					strHtml += info["Keywords"] + "</br>" + info["Day1"] + "</br>" + info["Day2"] + "</br>";
+				}
+			}*/
+		//	alert(strHtml);//显示处理后的数据	
+			});
+}
+
+			
+
+/*			for(var temp_i = 4; temp_i < 11; temp_i++)
+			{
+				my_array[temp_i] = [100*Math.random(),100*Math.random(),100*Math.random(),100*Math.random()];
+			}
+			//}})
+*/
+			function updateGauges()
+			{	
+				if(j < my_array.length)
+				{
+					var i = 0;
+					for (var key in gauges)
+					{
+						//var value = getRandomValue(gauges[key])
+						gauges[key].redraw(my_array[j][i]);
+						i++;
+					}
+				}
+				j++;
+			}
+			
+			function getRandomValue(gauge)
+			{
+				var overflow = 0; //10;
+				return gauge.config.min - overflow + (gauge.config.max - gauge.config.min + overflow*2) *  Math.random();
+			}
+			var clearIntervalFun = null;
+			var clearIntervalFun2 = null;
+			//Call initialize() when you refresh the html file in the browser
+			function initialize()
+			{
+				json();
+				createGauges();
+				clearIntervalFun = setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			//Restart button, added by Hongwei
+			function my_restart()
+			{
+				
+				//createGauges();
+				j = 0;
+				clearAllInterval();
+				clearIntervalFun2 = setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			//Stop Button, added by Hongwei
+			function my_stop()
+			{
+				clearAllInterval();
+				j = 0;
+				for (var key in gauges)
+				{
+					gauges[key].redraw(0);
+				}				
+			}
+			//Pause Button, added by Hongwei
+			function my_pause()
+			{
+				clearAllInterval();
+			}
+			//Start Button, added by Hongwei
+			function my_start_after_pause()
+			{
+				clearIntervalFun2 = setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			//Clear All the Interval, added by Hongwei
+			function clearAllInterval()
+			{
+				clearInterval(clearIntervalFun);
+				clearInterval(clearIntervalFun2);
+			}
+			//}})
+			
+		</script>
+		
+		
+	</head>
+	
+	<body onload="initialize()">
+		<blockquote>
+		<p>
+			<span id="screenGaugeContainer"></span>
+			<span id="batteryGaugeContainer"></span>
+		</p>
+		<p>
+			<span id="signalGaugeContainer"></span>
+		    <span id="cameraGaugeContainer"></span>
+        </p>
+
+		  <p><strong>Last Modified by <em>Hongwei </em>@ 
+	      <!-- #BeginDate format:wfcEn2a -->Tuesday, 10-Dec-2013 3:07 PM<!-- #EndDate --></strong></p>
+	      <!--<p>And the Area Chart:	</p>-->
+	</blockquote>
+    </body>
+	
+</html>
+<!--Area Chart, added by Hongwei-->
+<!--
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+			['DATA','charger','battery','fingprint','software','camera','screen','speaker','signal','iOS7'],
+			['1-Aug',41,124,8240,96 ,802 ,3296,8,2,97],
+			['8-Aug',33,252,16480,66 ,773 ,4944,0,4,162],
+			['15-Aug',43,87,42848,73 ,763 ,11536,8,0,301],
+			['22-Aug',11,153,16480,118 ,966 ,992,9,13,213],
+			['29-Aug',15,276,8240,117 ,641 ,4944,0,3,985],
+			['5-Sep',29,607,263680,22127 ,77456 ,88992,4,250,49440],
+			['12-Sep',53,836,222480,19012 ,12294 ,49440,8,265,29664],
+			['19-Sep',54,18128,166448,14832 ,7243 ,24720,16,157,54384],
+
+        ]);
+
+        var options = {
+          title: 'iPhone 5S Trends',
+          hAxis: {title: 'Date',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 600px; height: 400px;"></div>
+  </body>
+</html>
+-->
+
+<!--Add Favorite and Homepage-->
+<!--
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	// JavaScript Document
+	// Add to Favorite < a onclick="AddFavorite(window.location,document.title)" >Add to Favorite< /a>
+
+		function AddFavorite(sURL, sTitle)
+		{
+			try
+			{
+				window.external.addFavorite(sURL, sTitle);
+			}
+			catch (e)
+			{
+				try
+				{
+					window.sidebar.addPanel(sTitle, sURL, "");
+				}
+				catch (e)
+				{
+					alert("加入收藏失败，请使用Ctrl+D进行添加");
+				}
+			}
+		}
+
+
+		//设为首页 < a onclick="SetHome(this,window.location)" > 设为首页 < /a>
+				function SetHome(obj,vrl){
+				try{
+						obj.style.behavior='url(#default#homepage)';obj.setHomePage(vrl);
+				}
+				catch(e){
+						if(window.netscape) {
+								try {
+										netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+								}
+								catch (e) {
+										alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+								}
+								var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+								prefs.setCharPref('browser.startup.homepage',vrl);
+						 }
+				}
+		}
+
+
+		//该代码片段来自于: http://www.sharejs.com/codes/javascript/8907
+
+		    </script>
+  </head>
+    	<p>
+		<a  href="#" onclick="SetHome(this,window.location)" > Set as Homepage   </a>
+        
+		<a  href="#" onclick="AddFavorite(window.location,document.title)"> Add to Favorite </a>
+		</p>
+  </html>
+-->

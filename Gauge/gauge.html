@@ -1,0 +1,317 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<!--add buttons, by Hongwei-->
+<p>
+Guide:
+</p>
+<p>
+Buttons
+</p>
+<p>
+Click here to Restart: <button onclick="javsacript:my_restart()">Restart</button>
+Click here to Stop: <button onclick="javsacript:my_stop()">Stop</button>
+</p>
+<p>
+Click here to Pause: <button onclick="javsacript:my_pause()">Pause</button>
+Click here to Start after Pause: <button onclick="javsacript:my_start_after_pause()">Start</button>
+</p>
+
+<html>
+  	<head>
+    	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+    	<title>d3.js gauges</title>
+		
+		<style>
+		
+			body
+			{
+			  	font: 16px arial;
+			}
+			
+		</style>
+		
+		<!-- <script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script> -->
+		<!--Use the local path, local files, so this visualization can be completely independent. changed by Hongwei-->
+        
+		<script type="text/javascript" src="d3/d3.v3.js"></script> 
+		<script type="text/javascript" src="js/gauge.js"></script>
+ 
+		<script>
+
+			var gauges = [];
+			
+			function createGauge(name, label, min, max)
+			{
+				var config = 
+				{
+					size: 180,
+					label: label,
+					min: undefined != min ? min : 0,
+					max: undefined != max ? max : 2500,
+					minorTicks: 20
+				}
+				
+				var range = config.max - config.min;
+				config.yellowZones = [{ from: config.min + range*0.75, to: config.min + range*0.9 }];
+				config.redZones = [{ from: config.min + range*0.9, to: config.max }];
+				
+				gauges[name] = new Gauge(name + "GaugeContainer", config);
+				gauges[name].render();
+			}
+			
+			function createGauges()
+			{
+				//createGauge("screen", "Screen");
+				//createGauge("battery", "Battery");
+				//createGauge("signal", "Signal")
+				//createGauge("camera", "Camera");
+				//battery,camera,charger,colour,fingerprint,ios7,screen
+				createGauge("battery", "Battery");
+				createGauge("camera", "Camera");
+				createGauge("charger", "Charger");
+				createGauge("color", "Color");
+				createGauge("fingerprint", "Fingerprint");
+				createGauge("ios7", "IOS7");
+				createGauge("screen", "Screen");
+			}
+			/*var my_array = new Array();
+			my_array[0] = [10,20,30,40];
+			my_array[1] = [20,40,60,80];
+			my_array[2] = [30,40,50,60];
+			my_array[3] = [40,50,60,70];
+			for(var temp_i = 4; temp_i < 30; temp_i++)
+			{
+				my_array[temp_i] = [100*Math.random(),100*Math.random(),100*Math.random(),100*Math.random()];
+			}
+			*/
+			var my_array = [[371,589,30,128,2443,806,467],
+							[370,588,29,128,2443,803,467],
+							[367,588,29,128,2443,797,466],
+							[367,588,29,128,2443,797,466],
+							[367,586,29,128,2441,793,466],
+							[365,584,29,123,2429,785,466],
+							[363,582,27,121,2417,782,462],
+							[363,582,27,120,2416,781,462],
+							[362,581,27,118,2410,778,462],
+							[359,578,26,118,2402,771,462],
+							[218,322,22,91,1696,676,412],
+							[178,255,21,58,1293,615,377],
+							[176,245,19,56,1207,609,374],
+							[170,232,19,53,1164,605,374],
+							[163,222,17,52,1142,601,372],
+							[160,209,17,52,1027,591,370],
+							[156,205,17,51,965,579,367],
+							[153,194,16,50,913,552,362],
+							[149,179,15,46,863,413,349],
+							[139,164,15,43,786,280,336],
+							[118,126,15,25,588,198,291],
+							[93,96,14,19,469,136,272],
+							[78,84,12,13,414,101,262],
+							[66,74,7,11,264,83,248],
+							[53,56,5,9,148,62,231],
+							[34,38,4,6,89,43,198],
+							[27,25,3,3,51,28,178],
+							[21,17,3,3,35,25,169],
+							[13,8,2,2,16,12,153],
+							[11,7,0,1,8,6,147]]
+			var j = 0;
+			function updateGauges()
+			{	
+				if(j < my_array.length)
+				{
+					var i = 0;
+					for (var key in gauges)
+					{
+						//var value = getRandomValue(gauges[key])
+						gauges[key].redraw(my_array[j][i]);
+						i++;
+					}
+				}
+				j++;
+			}
+			
+			function getRandomValue(gauge)
+			{
+				var overflow = 0; //10;
+				return gauge.config.min - overflow + (gauge.config.max - gauge.config.min + overflow*2) *  Math.random();
+			}
+			var clearIntervalFun = null;
+			var clearIntervalFun2 = null;
+			//Call initialize() when you refresh the html file in the browser
+			function initialize()
+			{
+				createGauges();
+				clearIntervalFun = setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			//Restart button, added by Hongwei
+			function my_restart()
+			{
+				
+				//createGauges();
+				j = 0;
+				clearAllInterval();
+				clearIntervalFun2 = setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			//Stop Button, added by Hongwei
+			function my_stop()
+			{
+				clearAllInterval();
+				j = 0;
+				for (var key in gauges)
+				{
+					gauges[key].redraw(0);
+				}				
+			}
+			//Pause Button, added by Hongwei
+			function my_pause()
+			{
+				clearAllInterval();
+			}
+			//Start Button, added by Hongwei
+			function my_start_after_pause()
+			{
+				clearIntervalFun2 = setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			//Clear All the Interval, added by Hongwei
+			function clearAllInterval()
+			{
+				clearInterval(clearIntervalFun);
+				clearInterval(clearIntervalFun2);
+			}
+			
+		</script>
+		
+		
+	</head>
+	
+	<body onload="initialize()">
+		<blockquote>
+		<!--battery,camera,charger,color,fingerprint,ios7,screen-->
+		<p>
+			<span id="batteryGaugeContainer"></span>
+			<span id="cameraGaugeContainer"></span>
+			<span id="chargerGaugeContainer"></span>
+			<span id="colorGaugeContainer"></span>
+		</p>
+		<p>
+			<span id="fingerprintGaugeContainer"></span>
+			<span id="ios7GaugeContainer"></span>
+			<span id="screenGaugeContainer"></span>
+		</p>
+		<!--
+		<p>
+			<span id="screenGaugeContainer"></span>
+			<span id="batteryGaugeContainer"></span>
+		</p>
+		<p>
+			<span id="signalGaugeContainer"></span>
+		    <span id="cameraGaugeContainer"></span>
+        </p>
+		-->
+
+		  <p><strong>This is an Alpha Version, Last Modified by <em>Team Market </em>@ 
+	      <!-- #BeginDate format:wfcEn2a -->Tuesday, 10-Dec-2013 8:50 PM<!-- #EndDate --></strong></p>
+		  
+	      <!--<p>And the Area Chart:	</p>-->
+	</blockquote>
+    </body>
+	
+</html>
+<!--Area Chart, added by Hongwei-->
+<!--
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+			['DATA','charger','battery','fingprint','software','camera','screen','speaker','signal','iOS7'],
+			['1-Aug',41,124,8240,96 ,802 ,3296,8,2,97],
+			['8-Aug',33,252,16480,66 ,773 ,4944,0,4,162],
+			['15-Aug',43,87,42848,73 ,763 ,11536,8,0,301],
+			['22-Aug',11,153,16480,118 ,966 ,992,9,13,213],
+			['29-Aug',15,276,8240,117 ,641 ,4944,0,3,985],
+			['5-Sep',29,607,263680,22127 ,77456 ,88992,4,250,49440],
+			['12-Sep',53,836,222480,19012 ,12294 ,49440,8,265,29664],
+			['19-Sep',54,18128,166448,14832 ,7243 ,24720,16,157,54384],
+
+        ]);
+
+        var options = {
+          title: 'iPhone 5S Trends',
+          hAxis: {title: 'Date',  titleTextStyle: {color: '#333'}},
+          vAxis: {minValue: 0}
+        };
+
+        var chart = new google.visualization.AreaChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body>
+    <div id="chart_div" style="width: 600px; height: 400px;"></div>
+  </body>
+</html>
+-->
+
+<!--Add Favorite and Homepage-->
+<!--
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+	// JavaScript Document
+	// Add to Favorite < a onclick="AddFavorite(window.location,document.title)" >Add to Favorite< /a>
+
+		function AddFavorite(sURL, sTitle)
+		{
+			try
+			{
+				window.external.addFavorite(sURL, sTitle);
+			}
+			catch (e)
+			{
+				try
+				{
+					window.sidebar.addPanel(sTitle, sURL, "");
+				}
+				catch (e)
+				{
+					alert("加入收藏失败，请使用Ctrl+D进行添加");
+				}
+			}
+		}
+
+
+		//设为首页 < a onclick="SetHome(this,window.location)" > 设为首页 < /a>
+				function SetHome(obj,vrl){
+				try{
+						obj.style.behavior='url(#default#homepage)';obj.setHomePage(vrl);
+				}
+				catch(e){
+						if(window.netscape) {
+								try {
+										netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+								}
+								catch (e) {
+										alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+								}
+								var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+								prefs.setCharPref('browser.startup.homepage',vrl);
+						 }
+				}
+		}
+
+
+		//该代码片段来自于: http://www.sharejs.com/codes/javascript/8907
+
+		    </script>
+  </head>
+    	<p>
+		<a  href="#" onclick="SetHome(this,window.location)" > Set as Homepage   </a>
+        
+		<a  href="#" onclick="AddFavorite(window.location,document.title)"> Add to Favorite </a>
+		</p>
+  </html>
+-->

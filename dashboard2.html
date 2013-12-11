@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+  	<head>
+    	<meta http-equiv="content-type" content="text/html;charset=utf-8">
+    	<title>d3.js gauges</title>
+		
+		<style>
+		
+			body
+			{
+			  	font: 10px arial;
+			}
+			
+		</style>
+		
+		<script type="text/javascript" src="d3/d3.v3.js"></script>
+		<script type="text/javascript" src="gauge.js"></script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    
+<!--Rosling script-->
+	 
+	<script type="text/javascript">
+      google.load("visualization", "1", {packages:["corechart"]});
+      google.setOnLoadCallback(drawChart);
+      function drawChart() {
+        var data = google.visualization.arrayToDataTable([
+          ['ID', 'Life Expectancy', 'Fertility Rate', 'Region',     'Population'],
+          ['CAN',    80.66,              1.67,      'North America',  33739900],
+          ['DEU',    79.84,              1.36,      'Europe',         81902307],
+          ['DNK',    78.6,               1.84,      'Europe',         5523095],
+          ['EGY',    72.73,              2.78,      'Middle East',    79716203],
+          ['GBR',    80.05,              2,         'Europe',         61801570],
+          ['IRN',    72.49,              1.7,       'Middle East',    73137148],
+          ['IRQ',    68.09,              4.77,      'Middle East',    31090763],
+          ['ISR',    81.55,              2.96,      'Middle East',    7485600],
+          ['RUS',    68.6,               1.54,      'Europe',         141850000],
+          ['USA',    78.09,              2.05,      'North America',  307007000]
+        ]);
+
+        var options = {
+          title: 'Correlation between life expectancy, fertility rate and population of some world countries (2010)',
+          hAxis: {title: 'Life Expectancy'},
+          vAxis: {title: 'Fertility Rate'},
+          bubble: {textStyle: {fontSize: 11}}
+        };
+
+        var chart = new google.visualization.BubbleChart(document.getElementById('chart_div'));
+        chart.draw(data, options);
+      }
+    </script>
+ 
+				
+<!--Gauge script-->
+		
+		<script>
+						
+				
+			var gauges = [];
+			
+			function createGauge(name, label, min, max)
+			{
+				var config = 
+				{
+					size: 100,
+					label: label,
+					min: undefined != min ? min : 0,
+					max: undefined != max ? max : 100,
+					minorTicks: 20
+				}
+				
+				var range = config.max - config.min;
+				config.yellowZones = [{ from: config.min + range*0.75, to: config.min + range*0.9 }];
+				config.redZones = [{ from: config.min + range*0.9, to: config.max }];
+				
+				gauges[name] = new Gauge(name + "GaugeContainer", config);
+				gauges[name].render();
+			}
+			
+			function createGauges()
+			{
+				createGauge("screen", "Screen");
+				createGauge("battery", "Battery");
+				createGauge("signal", "Signal")
+				createGauge("camera", "Signal");
+				//createGauge("test", "Test", -50, 50 );
+			}
+			var array=[60,20,30,80];			
+			var i = 0;
+			function updateGauges()
+			{	
+				//i=0;
+				for (var key in gauges)
+				{
+					var value = getRandomValue(gauges[key])
+					gauges[key].redraw(array[i]);
+					i++;
+				}
+			}
+			
+			function getRandomValue(gauge)
+			{
+				var overflow = 0; //10;
+				return gauge.config.min - overflow + (gauge.config.max - gauge.config.min + overflow*2) *  Math.random();
+			}
+			
+			function initialize()
+			{
+				createGauges();
+				setInterval(updateGauges, 1000); //Time for gauge refresh
+			}
+			
+		</script>
+		
+		
+	</head>
+	
+	<body onload="initialize()">
+		<span id="screenGaugeContainer"></span>
+		<span id="batteryGaugeContainer"></span>
+		<span id="signalGaugeContainer"></span>
+		<span id="cameraGaugeContainer"></span>
+		<span id="testGaugeContainer"></span>
+		
+			<br/>
+		<div id="chart_div" style="width: 900px; height: 500px;"></div>
+		
+	</body>
+	
+</html>

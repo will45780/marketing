@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>D3 CSV</title>
+</head>
+<body>
+
+<script type="text/javascript" src="d3/d3.v3.js"></script>
+<script src="./tagcloud/d3.layout.cloud.js"></script>
+<script type="text/javascript">
+
+
+var fill = d3.scale.category20();
+
+var cityData = [], 
+    width = 500, 
+    height = 500;
+
+d3.csv("./tagcloud/test_will.csv", function(data) {
+    // build the list of city names
+    data.forEach( function (d) {
+        cityData.push(d.place);
+    });
+
+    d3.layout.cloud().size([500, 500])
+        .words(data.map(function(d) {
+            return {text: d.place, size: 10 + d.population / 1000};
+        }))
+        .rotate(function() { return ~~(Math.random() * 2) * 90; })
+        .font("Impact")
+        .fontSize(function(d) { return d.size; })
+        .on("end", draw)
+        .start();
+});
+
+function draw(words) {
+d3.select("body").append("svg")
+    .attr("width", 500)
+    .attr("height", 500)
+    .append("g")
+    .attr("transform", "translate(150,150)")
+    .selectAll("text")
+    .data(words)
+    .enter().append("text")
+    .style("font-size", function(d) { return d.size + "px"; })
+    .style("font-family", "Impact")
+    .style("fill", function(d, i) { return fill(i); })
+    .attr("text-anchor", "middle")
+    .attr("transform", function(d) {
+        return "translate(" + [d.x, d.y] + ")rotate(" + d.rotate + ")";
+    })
+    .text(function(d) { return d.text; });
+}           
+</script>
+</body>
+</html>
